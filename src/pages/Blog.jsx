@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom'
 import { assets, blog_data, comments_data } from '../assets/assets'
 import Navbar from '../components/Navbar'
 import Moment from 'moment'
+import Foooter from '../components/Foooter'
+import Loader from '../components/Loader'
 
 const Blog = () => {
 
@@ -11,6 +13,9 @@ const Blog = () => {
   const [data, setData] = useState(null)
   const [comments, setComments] = useState([])
 
+  const [name, setName] = useState("")
+  const [content, setContent] = useState()
+
   const fetchBlogData = async()=>{
    const data = blog_data.find(item => item._id === id)
    setData(data)
@@ -18,6 +23,10 @@ const Blog = () => {
 
   const fetchComment = async ()=>{
     setComments(comments_data)
+  }
+
+  const addComment = async(e)=>{
+    e.preventDefault();
   }
 
   useEffect(()=>{
@@ -42,7 +51,7 @@ const Blog = () => {
 
         <h2 className='my-5 max-w-lg truncate mx-auto'>{data.subTitle}</h2>
 
-        <p className='inline-block py-1 px-2 rounded-full mb-6 border text-sm border-primary/35 bg-primary/5 font-medium text-primary'>Michal Brown</p>
+        <p className='inline-block py-1 px-2 rounded-full  mb-6 border text-sm border-primary/35 bg-primary/5 font-medium text-primary'>Michal Brown</p>
 
       </div>
 
@@ -54,16 +63,56 @@ const Blog = () => {
 
       {/*comment section*/}
       <div className='mt-14 mb-10 max-w-3xl mx-auto'>
-        <p>
+        <p className='font-semibold m-4'>
           Comments ({comments.length})
         </p>
 
+        <div className='flex flex-col gap-4'>
+          {comments.map((item, index)=> (
+            <div key={index} className='relative bg-primary/2 border border-primary/3 max-w-xl rounded text-gray-600'>
+
+            <div>
+              <img src={assets.user_icon} alt="" className='w-6 ml-1 mt-1 '/>
+              <p className='font-medium'>{item.name}</p>
+             </div>
+
+               <p className='text-sm max-w-md ml-8'>{item.content}</p>
+               <div className='absolute right-4 bottom-3 flex items-center gap-2 text-xs'>
+                {Moment(item.createdAt).fromNow()}
+               </div>
+            </div>
+          ) )}
+        </div> 
+
+          {/* add comment section */}
+          <div className='max-w-3xl mx-auto'>
+            <p className='font-semibold mt-4 mb-4'>Add your comment</p>
+            <form onSubmit={addComment} className='flex flex-col items-start gap-4 max-w-lg'>
+
+              <input onChange={(e)=> setName(e.target.value)} value={name} type="text" placeholder='Name' required className='w-full p-2 border border-gray-300 outline-none' />
+
+              <textarea onChange={(e)=> setContent(e.target.value)} value={content} placeholder='Comment' required className='w-full p-2 border border-gray-300 rounded outline-none h-48'></textarea>
+
+              <button  type="submit" className='bg-primary text-white rounded p-2 px-8 hover:scale-102 transition-all cursor-pointer'>Submit</button>
+            </form>
+          </div>
+
+          {/* share buttons */}
+          <div className='my-24 max-w-3xl mx-auto'>
+            <p className='font-semibold my-4'>Share this article on social media</p>
+
+           <div className='flex'>
+            <img src={assets.facebook_icon} width={50} alt="" />
+            <img src={assets.twitter_icon} width={50} alt="" />
+            <img src={assets.googleplus_icon} width={50} alt="" />
+           </div>
+          </div>
       </div>
 
     </div>
-
+           <Foooter/>
     </div>
-  ) : <div>Loading....</div>
+  ) : <Loader/>
 }
 
 export default Blog
